@@ -7,15 +7,16 @@ jobs:
     name: CI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: pnpm/action-setup@v2.1.0
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
         name: Install PNPM
         with:
-          version: 6
-      - uses: actions/setup-node@v2
+          version: 9
+      - uses: actions/setup-node@v4
         with:
-          node-version: "16"
+          node-version: "22"
           cache: "pnpm"
-          cache-dependency-path: "**/pnpm-lock.yaml"
       - run: pnpm install
       - run: pnpm run lint
+      - run: pnpm run test
+      - run: pnpm run build

@@ -52,7 +52,7 @@ export interface DomainResponse {
         owner: string;
         /** Number of uploads associated with this domain */
         uploads: number;
-      }
+      },
     ];
   };
 }
@@ -127,7 +127,7 @@ export interface UploadFileResponse {
         user: TixteUser;
         /** Access level granted to the user */
         access_level: number;
-      }
+      },
     ];
     /** Full URL to the file page */
     url: string;
@@ -190,6 +190,23 @@ export interface TixteUser {
   avatar: string;
 }
 
+export interface TixteUpload {
+  /** Unique asset identifier */
+  asset_id: string;
+  /** File name */
+  name: string;
+  /** File extension */
+  extension: string;
+  /** MIME type of the file */
+  mimetype: string;
+  /** Domain where the file is hosted */
+  domain: string;
+  /** Size of the file in bytes */
+  size: number;
+  /** Timestamp when the file was uploaded */
+  uploaded_at: string;
+}
+
 /**
  * Response structure for listing uploads endpoint
  */
@@ -199,22 +216,7 @@ export interface UploadsResponse {
   /** Uploads data object */
   data: {
     /** Array of uploaded files */
-    uploads: Array<{
-      /** Unique asset identifier */
-      asset_id: string;
-      /** File name */
-      name: string;
-      /** File extension */
-      extension: string;
-      /** MIME type of the file */
-      mimetype: string;
-      /** Domain where the file is hosted */
-      domain: string;
-      /** Size of the file in bytes */
-      size: number;
-      /** Timestamp when the file was uploaded */
-      uploaded_at: string;
-    }>;
+    uploads: TixteUpload[];
     /** Current page number */
     page: number;
     /** Total number of pages */
