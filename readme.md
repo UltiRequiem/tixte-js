@@ -51,9 +51,6 @@ Are you using this package? Add it here!
 - [Sergif](https://sergif.ultirequiem.com) - Netlify Functions - **Netlify x
   Hashnode 2022 Hackathon**
 
-- [Piolafood](https://github.com/UltiRequiem/piolafood) - Next.js Endpoints -
-  **First Buildergroop Hackathon**
-
 ## Licence
 
 Licenses under the MIT Licence.
