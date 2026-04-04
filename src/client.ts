@@ -102,7 +102,11 @@ export class TixteClient {
 
     const filename = `${options.filename ?? crypto.randomUUID()}.${options.extension ?? "png"}`;
     const formData = new FormData();
-    formData.append("file", new Blob([buffer as Uint8Array<ArrayBuffer>]), filename);
+    formData.append(
+      "file",
+      new Blob([buffer as Uint8Array<ArrayBuffer>]),
+      filename,
+    );
 
     return this.request<UploadFileResponse>(
       `${ENDPOINTS.UPLOAD_ENDPOINT}?random_name=${!options.filename}`,
@@ -124,11 +128,14 @@ export class TixteClient {
     id: string | number,
     fileInfo: UpdateFileInfo,
   ): Promise<UpdateFileResponse> {
-    return this.request<UpdateFileResponse>(`${ENDPOINTS.FILE_ENDPOINT}/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(fileInfo),
-    });
+    return this.request<UpdateFileResponse>(
+      `${ENDPOINTS.FILE_ENDPOINT}/${id}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fileInfo),
+      },
+    );
   }
 
   /**
@@ -149,8 +156,11 @@ export class TixteClient {
    * @returns Promise resolving to deletion confirmation
    */
   async deleteFile(id: string | number): Promise<DeleteFileResponse> {
-    return this.request<DeleteFileResponse>(`${ENDPOINTS.FILE_ENDPOINT}/${id}`, {
-      method: "DELETE",
-    });
+    return this.request<DeleteFileResponse>(
+      `${ENDPOINTS.FILE_ENDPOINT}/${id}`,
+      {
+        method: "DELETE",
+      },
+    );
   }
 }

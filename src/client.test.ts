@@ -51,7 +51,9 @@ describe("TixteClient", () => {
   it("domains() calls GET /users/@me/domains", async () => {
     const expected = {
       success: true,
-      data: { domains: [{ name: "my.domain.com", owner: "user1", uploads: 5 }] },
+      data: {
+        domains: [{ name: "my.domain.com", owner: "user1", uploads: 5 }],
+      },
     };
     mockFetch.mockReturnValue(ok(expected));
 
@@ -88,7 +90,10 @@ describe("TixteClient", () => {
     });
 
     it("uses defaultURL when no domain option provided", async () => {
-      const expected = { success: true, data: { url: "https://example.com/file.png" } };
+      const expected = {
+        success: true,
+        data: { url: "https://example.com/file.png" },
+      };
       mockFetch.mockReturnValue(ok(expected));
 
       const result = await new TixteClient("key", {
@@ -106,12 +111,17 @@ describe("TixteClient", () => {
     });
 
     it("uses provided domain option over defaultURL", async () => {
-      const expected = { success: true, data: { url: "https://override.com/file.png" } };
+      const expected = {
+        success: true,
+        data: { url: "https://override.com/file.png" },
+      };
       mockFetch.mockReturnValue(ok(expected));
 
       const result = await new TixteClient("key", {
         defaultURL: "default.domain.com",
-      }).uploadFile(new Uint8Array([1, 2, 3]), { domain: "override.domain.com" });
+      }).uploadFile(new Uint8Array([1, 2, 3]), {
+        domain: "override.domain.com",
+      });
 
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining(ENDPOINTS.UPLOAD_ENDPOINT),
