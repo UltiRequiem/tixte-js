@@ -35,7 +35,7 @@
     "typedoc": "^0.28.0",
     "typescript": "^6.0.0",
     "typescript-eslint": "^8.29.0",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.11"
   },
   "keywords": [
     "api",
