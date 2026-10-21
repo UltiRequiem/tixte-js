@@ -6,8 +6,8 @@
   "types": "lib/index.d.ts",
   "exports": {
     ".": {
-      "import": "./lib/index.js",
-      "types": "./lib/index.d.ts"
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js"
     }
   },
   "sideEffects": false,
@@ -24,7 +24,8 @@
     "fmt": "prettier --write 'src/**/*.ts'",
     "lint": "eslint 'src/**/*.ts' && prettier --check 'src/**/*.ts'",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepublishOnly": "pnpm lint && pnpm test && pnpm build"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
@@ -42,5 +43,17 @@
     "wrapper",
     "tixte"
   ],
-  "packageManager": "pnpm@12.6.0"
+  "packageManager": "pnpm@12.6.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UltiRequiem/tixte-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/UltiRequiem/tixte-js/issues"
+  },
+  "homepage": "https://tixte-wrapper.netlify.app",
+  "description": "Typed, dependency-free client for the Tixte API"
 }

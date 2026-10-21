@@ -44,16 +44,14 @@ export interface DomainResponse {
   /** Domains data object */
   data: {
     /** List of domains registered by the user */
-    domains: [
-      {
-        /** Domain name */
-        name: string;
-        /** User ID of the domain owner */
-        owner: string;
-        /** Number of uploads associated with this domain */
-        uploads: number;
-      },
-    ];
+    domains: Array<{
+      /** Domain name */
+      name: string;
+      /** User ID of the domain owner */
+      owner: string;
+      /** Number of uploads associated with this domain */
+      uploads: number;
+    }>;
   };
 }
 
@@ -121,14 +119,12 @@ export interface UploadFileResponse {
     /** File type identifier */
     type: number;
     /** List of user permissions for this file */
-    permissions: [
-      {
-        /** User with access to the file */
-        user: TixteUser;
-        /** Access level granted to the user */
-        access_level: number;
-      },
-    ];
+    permissions: Array<{
+      /** User with access to the file */
+      user: TixteUser;
+      /** Access level granted to the user */
+      access_level: number;
+    }>;
     /** Full URL to the file page */
     url: string;
     /** Direct URL to the file resource */
@@ -190,6 +186,9 @@ export interface TixteUser {
   avatar: string;
 }
 
+/**
+ * A single uploaded file as returned by the listing endpoint
+ */
 export interface TixteUpload {
   /** Unique asset identifier */
   asset_id: string;

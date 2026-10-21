@@ -3,12 +3,13 @@ import type {
   DeleteFileResponse,
   DomainResponse,
   SizeResponse,
+  TixteError,
   UploadFileResponse,
   UploadOptions,
   UpdateFileInfo,
   UpdateFileResponse,
   UploadsResponse,
-} from "./types";
+} from "./types.js";
 
 /**
  * API endpoints for Tixte service
@@ -27,6 +28,25 @@ export const ENDPOINTS = {
   /** Endpoint for getting upload size information */
   SIZE_ENDPOINT: "/users/@me/uploads/size",
 } as const;
+
+/**
+ * Error thrown when the Tixte API responds with a non-2xx status
+ */
+export class TixteApiError extends Error {
+  /**
+   * @param status - HTTP status code of the response
+   * @param statusText - HTTP status text of the response
+   * @param body - Parsed error body, if the API returned one
+   */
+  constructor(
+    readonly status: number,
+    readonly statusText: string,
+    readonly body?: TixteError,
+  ) {
+    super(`HTTP ${status}: ${body?.error?.message ?? statusText}`.trim());
+    this.name = "TixteApiError";
+  }
+}
 
 /**
  * Client for interacting with the Tixte API
@@ -52,7 +72,8 @@ export class TixteClient {
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      const body = await response.json().catch(() => undefined);
+      throw new TixteApiError(response.status, response.statusText, body);
     }
 
     return response.json() as Promise<T>;
@@ -84,35 +105,33 @@ export class TixteClient {
 
   /**
    * Uploads a file to Tixte
-   * @param buffer - The file data as a Uint8Array
+   * @param buffer - The file data as a Uint8Array, ArrayBuffer or Blob
    * @param options - Upload options including extension, filename, and domain
    * @returns Promise resolving to upload response with file details
    * @throws Error if no domain is provided and no default URL is set
    */
   async uploadFile(
-    buffer: Uint8Array,
+    buffer: Uint8Array | ArrayBuffer | Blob,
     options: UploadOptions = {},
   ): Promise<UploadFileResponse> {
-    if (!options.domain) {
-      if (!this.options?.defaultURL) {
-        throw new Error("No domain provided and no default URL set");
-      }
-      options.domain = this.options.defaultURL;
+    const domain = options.domain ?? this.options?.defaultURL;
+    if (!domain) {
+      throw new Error("No domain provided and no default URL set");
     }
 
     const filename = `${options.filename ?? crypto.randomUUID()}.${options.extension ?? "png"}`;
     const formData = new FormData();
-    formData.append(
-      "file",
-      new Blob([buffer as Uint8Array<ArrayBuffer>]),
-      filename,
-    );
+    const blob =
+      buffer instanceof Blob
+        ? buffer
+        : new Blob([buffer as Uint8Array<ArrayBuffer> | ArrayBuffer]);
+    formData.append("file", blob, filename);
 
     return this.request<UploadFileResponse>(
       `${ENDPOINTS.UPLOAD_ENDPOINT}?random_name=${!options.filename}`,
       {
         method: "POST",
-        headers: { domain: options.domain },
+        headers: { domain },
         body: formData,
       },
     );
@@ -129,7 +148,7 @@ export class TixteClient {
     fileInfo: UpdateFileInfo,
   ): Promise<UpdateFileResponse> {
     return this.request<UpdateFileResponse>(
-      `${ENDPOINTS.FILE_ENDPOINT}/${id}`,
+      `${ENDPOINTS.FILE_ENDPOINT}/${encodeURIComponent(id)}`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -145,9 +164,11 @@ export class TixteClient {
    * @returns Promise resolving to uploads list with pagination info
    */
   async uploads(page = 1, amount = 3): Promise<UploadsResponse> {
-    return this.request<UploadsResponse>(
-      `${ENDPOINTS.FILE_ENDPOINT}?page=${page}&amount=${amount}`,
-    );
+    const query = new URLSearchParams({
+      page: String(page),
+      amount: String(amount),
+    });
+    return this.request<UploadsResponse>(`${ENDPOINTS.FILE_ENDPOINT}?${query}`);
   }
 
   /**
@@ -157,7 +178,7 @@ export class TixteClient {
    */
   async deleteFile(id: string | number): Promise<DeleteFileResponse> {
     return this.request<DeleteFileResponse>(
-      `${ENDPOINTS.FILE_ENDPOINT}/${id}`,
+      `${ENDPOINTS.FILE_ENDPOINT}/${encodeURIComponent(id)}`,
       {
         method: "DELETE",
       },
