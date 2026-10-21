@@ -1,16 +1,26 @@
 name: Publish
 
+# Every push to main publishes a new version to npm and creates a GitHub
+# Release. Add "[skip release]" to a commit message to opt out.
 on:
-  release:
-    types: [published]
+  push:
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
 
 jobs:
   publish:
     name: Publish to npm
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      !contains(github.event.head_commit.message, '[skip release]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -24,21 +34,34 @@ jobs:
       - run: pnpm run lint
       - run: pnpm run test
 
-      # The release tag (v1.2.3) is the source of truth for the version.
-      - name: Set version from release tag
+      # Next version = latest published version bumped by commit message:
+      # :boom: or "!:" -> major, :sparkles: or "feat" -> minor, else patch.
+      - name: Compute next version
+        id: version
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: npm version "${RELEASE_TAG#v}" --no-git-tag-version
-
-      - run: pnpm run build
-
-      # Prereleases (v1.2.3-beta.1) go to the "next" dist-tag, not "latest".
-      - name: Publish to npm
-        env:
-          PRERELEASE: ${{ github.event.release.prerelease }}
+          MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          if [ "$PRERELEASE" = "true" ]; then
-            npm publish --access public --tag next
+          NAME=$(node -p "require('./package.json').name")
+          CURRENT=$(npm view "$NAME" version 2>/dev/null || echo "0.0.0")
+          IFS=. read -r MAJOR MINOR PATCH <<< "$CURRENT"
+          SUBJECT=$(printf '%s' "$MESSAGE" | head -n 1)
+          if [[ "$SUBJECT" == *":boom:"* || "$SUBJECT" == *"!:"* ]]; then
+            NEXT="$((MAJOR + 1)).0.0"
+          elif [[ "$SUBJECT" == *":sparkles:"* || "$SUBJECT" == feat* ]]; then
+            NEXT="$MAJOR.$((MINOR + 1)).0"
           else
-            npm publish --access public
+            NEXT="$MAJOR.$MINOR.$((PATCH + 1))"
           fi
+          echo "version=$NEXT" >> "$GITHUB_OUTPUT"
+          echo "Releasing $NAME $CURRENT -> $NEXT"
+
+      - run: npm version "${{ steps.version.outputs.version }}" --no-git-tag-version
+      - run: pnpm run build
+      - run: npm publish --access public
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "v${{ steps.version.outputs.version }}"
+          --target "$GITHUB_SHA" --generate-notes
