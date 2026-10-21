@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { TixteClient, ENDPOINTS } from "./client";
+import { TixteApiError, TixteClient, ENDPOINTS } from "./client.js";
 
 describe("TixteClient", () => {
   let mockFetch: ReturnType<typeof vi.fn>;
@@ -189,6 +189,61 @@ describe("TixteClient", () => {
 
     await expect(new TixteClient("bad-key").accountInfo()).rejects.toThrow(
       "HTTP 401: Unauthorized",
+    );
+  });
+
+  it("exposes status and API error body on TixteApiError", async () => {
+    const body = {
+      success: false,
+      error: { code: "AUTH", message: "Bad key" },
+    };
+    mockFetch.mockReturnValue(
+      Promise.resolve({
+        ok: false,
+        status: 401,
+        statusText: "Unauthorized",
+        json: () => Promise.resolve(body),
+      }),
+    );
+
+    const error = await new TixteClient("bad").accountInfo().catch((e) => e);
+
+    expect(error).toBeInstanceOf(TixteApiError);
+    expect(error.status).toBe(401);
+    expect(error.body).toEqual(body);
+    expect(error.message).toBe("HTTP 401: Bad key");
+  });
+
+  it("does not mutate the options passed to uploadFile()", async () => {
+    mockFetch.mockReturnValue(ok({ success: true }));
+    const options = { extension: "gif" };
+
+    await new TixteClient("key", { defaultURL: "a.b.c" }).uploadFile(
+      new Uint8Array([1]),
+      options,
+    );
+
+    expect(options).toEqual({ extension: "gif" });
+  });
+
+  it("accepts Blob and ArrayBuffer uploads", async () => {
+    mockFetch.mockReturnValue(ok({ success: true }));
+    const client = new TixteClient("key", { defaultURL: "a.b.c" });
+
+    await client.uploadFile(new Blob(["x"]));
+    await client.uploadFile(new ArrayBuffer(4));
+
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+  });
+
+  it("URL-encodes file ids", async () => {
+    mockFetch.mockReturnValue(ok({ success: true }));
+
+    await new TixteClient("key").deleteFile("a/b c");
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      `${ENDPOINTS.BASE_URL}${ENDPOINTS.FILE_ENDPOINT}/a%2Fb%20c`,
+      expect.anything(),
     );
   });
 });
