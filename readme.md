@@ -72,7 +72,7 @@ try {
 
 ## Docs
 
-Auto-generated with TypeDoc :two_hearts: https://ultirequiem.github.io/tixte-js/
+Auto-generated with TypeDoc :two_hearts: https://ulti.js.org/tixte-js/
 
 ## Development
 
