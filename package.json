@@ -54,6 +54,6 @@
   "bugs": {
     "url": "https://github.com/UltiRequiem/tixte-js/issues"
   },
-  "homepage": "https://tixte-wrapper.netlify.app",
+  "homepage": "https://ultirequiem.github.io/tixte-js/",
   "description": "Typed, dependency-free client for the Tixte API"
 }

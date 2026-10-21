@@ -72,7 +72,7 @@ try {
 
 ## Docs
 
-Auto-generated with TypeDoc :two_hearts: https://tixte-wrapper.netlify.app
+Auto-generated with TypeDoc :two_hearts: https://ultirequiem.github.io/tixte-js/
 
 ## Development
 
