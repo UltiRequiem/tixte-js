@@ -27,19 +27,20 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "eslint": "^9.24.0",
-    "eslint-plugin-tsdoc": "^0.4.0",
-    "eslint-plugin-unicorn": "^58.0.0",
-    "prettier": "^3.5.3",
-    "typedoc": "^0.28.0",
-    "typescript": "^6.0.0",
-    "typescript-eslint": "^8.29.0",
-    "vitest": "^4.1.11"
+    "@types/node": "^26.6.5",
+    "eslint": "^10.13.0",
+    "eslint-plugin-tsdoc": "^0.5.4",
+    "eslint-plugin-unicorn": "^78.0.0",
+    "prettier": "^3.9.10",
+    "typedoc": "^0.28.20",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^5.0.5"
   },
   "keywords": [
     "api",
     "wrapper",
     "tixte"
-  ]
+  ],
+  "packageManager": "pnpm@12.6.0"
 }
