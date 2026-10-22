@@ -83,6 +83,13 @@ pnpm test   # Vitest
 pnpm build  # compile to lib/
 ```
 
+Releases are fully automatic: every push to `main` publishes a new version to
+npm and creates a GitHub Release. The version in `package.json` is a
+placeholder (`0.0.0-development`) and is set at publish time from the latest
+npm version plus a bump taken from the commit message (`:boom:` or `!:` is
+major, `:sparkles:` or `feat` is minor, anything else is patch). Add
+`[skip release]` to a commit message to skip a release.
+
 Dependabot patch and minor updates are merged automatically once CI passes.
 
 ## License
