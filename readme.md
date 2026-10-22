@@ -72,7 +72,7 @@ try {
 
 ## Docs
 
-Auto-generated with TypeDoc :two_hearts: https://ulti.js.org/tixte-js/
+Auto-generated with TypeDoc: https://ulti.js.org/tixte-js
 
 ## Development
 
@@ -84,13 +84,6 @@ pnpm build  # compile to lib/
 ```
 
 Dependabot patch and minor updates are merged automatically once CI passes.
-
-## Using `@ultirequiem/tixte`
-
-Are you using this package? Add it here!
-
-- [Sergif](https://sergif.ultirequiem.com) - Netlify Functions - **Netlify x
-  Hashnode 2022 Hackathon**
 
 ## License
 
