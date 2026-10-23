@@ -18,7 +18,7 @@ npm i @ultirequiem/tixte # or: pnpm add / yarn add / bun add
 ```
 
 Requires Node.js 20 or newer (it uses the built-in `fetch`, `FormData` and
-`Blob`), and also works in Deno, Bun and modern browsers.
+`Blob`), and also works in Bun and modern browsers.
 
 ## Usage
 
